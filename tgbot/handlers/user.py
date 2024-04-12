@@ -34,6 +34,8 @@ async def user_start(message: Message, state: FSMContext):
     except:
         await message.bot.send_message(chat_id=admins, text="problem with db")
         await message.answer("an error occurred")
+        return
+
     message_list = message.text.split(" ")
     if len(message_list) > 1:
         try:
@@ -63,10 +65,14 @@ async def pre_checkout_query(query: PreCheckoutQuery):
 @user_router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 async def successfully_payment(message: Message, state: FSMContext):
     data = await state.get_data()
+    await state.clear()
     cart_id = data[f"{message.from_user.id}"]
+
     try:
         await db.change_cart_status(int(cart_id))
-        await message.answer("To'lov muvaffaqiyatli amalga oshirildi. Buyurtmangizni 2 ish kunida yetkazamiz. Buyurtma holatini bilish uchun admin bilan bog'lamishingiz mumkin")
+        await message.answer("To'lov muvaffaqiyatli amalga oshirildi."
+                             " Buyurtmangizni 2 ish kunida yetkazamiz. Buyurtma holatini bilish uchun admin"
+                             " bilan bog'lamishingiz mumkin")
     except:
         await message.answer("an error occurred")
         await message.bot.send_message(chat_id=admins, text=f"to'lov qilishda muammo yuzaga keldi"
