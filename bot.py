@@ -177,7 +177,7 @@ async def send_homework_to_users(users: list[int], item: RekData):
     return count
 
 
-@app.post("/webhook")
+@app.post("/webhook/tg-bot")
 async def process_update(update: dict):
     telegram_update = types.Update(**update)
     await dp._process_update(bot, telegram_update)
