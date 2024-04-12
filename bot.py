@@ -120,8 +120,8 @@ register_global_middlewares(dp, config)
 
 @app.on_event("startup")
 async def start_up():
-    if await bot.get_webhook_info():
-        await bot.delete_webhook()
+    # if await bot.get_webhook_info():
+    #     await bot.delete_webhook()
 
     await on_startup(bot, config.tg_bot.admin_ids)
 
