@@ -24,6 +24,7 @@ class Database:
             )
         except:
             logging.error("can't connect to database")
+            await self.pool.close()
             sys.exit(1)
 
     async def execute(self, command, *args,
@@ -104,6 +105,18 @@ class Database:
     async def get_all_subject_registration_data(self):
         return await self.execute("select * from subject_registration", fetch=True)
 
+###########################################
+    # for getting cart products and quantity by cart id
+    async def get_cart_products_by_cart_id(self, card_id):
+        sql = ("select mcp.quantity, mp.name, mp.price from main_cartproduct mcp join main_product mp "
+               "on mcp.product_id = mp.id where mcp.card_id=$1;")
+        return await self.execute(sql, card_id, fetch=True)
+
+    # edit cart status after successfully payment
+    async def change_cart_status(self, card_id):
+        sql = "update main_cart set status=2 where main_cart.id=$1;"
+        return await self.execute(sql, card_id, execute=True)
+    #######################################
     #  contest registration
     async def add_registration_data(self, name, surname, age, lang, address, phone):
         sql = ("INSERT INTO registration(name, surname, age, lang, address, phone, created_at)"

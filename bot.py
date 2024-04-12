@@ -24,14 +24,15 @@ from fastapi import FastAPI
 
 async def on_startup(bot: Bot, admin_ids: list[int]):
     try:
-        # await db.create()
-        # await db.create_table_users()
+        await db.create()
+        await db.create_table_users()
         # await db.create_table_registration()
         # await db.create_table_subject_registration()
         print("test")
     except:
         await broadcaster.broadcast(bot, admin_ids, "can't create tables. Program is stopping.....")
         logging.error("can't create tables. Program is stopping.....")
+        # await db.close()
         sys.exit(1)
 
     await broadcaster.broadcast(bot, admin_ids, "Bot ishga tushdi")
@@ -119,8 +120,8 @@ register_global_middlewares(dp, config)
 
 @app.on_event("startup")
 async def start_up():
-    # if await bot.get_webhook_info():
-    #     await bot.delete_webhook()
+    if await bot.get_webhook_info():
+        await bot.delete_webhook()
 
     await on_startup(bot, config.tg_bot.admin_ids)
 
@@ -198,8 +199,8 @@ async def main():
     await on_startup(bot, config.tg_bot.admin_ids)
     await dp.start_polling(bot)
 
-# if __name__ == "__main__":
-#     try:
-#         asyncio.run(main())
-#     except (KeyboardInterrupt, SystemExit):
-#         logging.error("Бот був вимкнений!")
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except (KeyboardInterrupt, SystemExit):
+        logging.error("Бот був вимкнений!")
